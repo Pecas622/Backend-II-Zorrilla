@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 
-let secretKey = "coder1234"
+let secretKey = "Pecas622"
 
 export const generateToken = (user) => {
     /*

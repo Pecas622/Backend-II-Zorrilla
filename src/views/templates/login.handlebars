@@ -1,22 +1,22 @@
-<div class="container d-flex justify-content-center align-items-center vh-120">
-    <div class="card p-4 shadow-sm cardSession">
-        <h2 class="text-center">Formulario de Login</h2>
-        <form action="" id="loginForm" method="post">
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" name="email">
+<div class="login-container">
+    <div class="login-card">
+        <h2 class="login-title">Formulario de Login</h2>
+        <form id="loginForm" method="post">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" name="email" id="email" required>
             </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" name="password">
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" name="password" id="password" required>
             </div>
-            <button type="submit" class="btn btn-primary w-100">
+            <button type="submit" class="submit-btn">
                 Iniciar Sesion
             </button>
         </form>
-        <div class="text-center mt-3">
-            <a href="/api/sessions/github">Iniciar sesion via Github</a>
-            <a href="/api/sessions/viewregister">¿No posee una cuenta? Registrarse</a>
+        <div class="extra-links">
+            <a href="/api/sessions/github">Iniciar sesión via Github</a>
+            <a href="/api/sessions/viewregister">¿No tiene una cuenta? Registrarse</a>
         </div>
     </div>
 </div>

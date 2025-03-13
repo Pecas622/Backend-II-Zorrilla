@@ -68,7 +68,7 @@ const initializatePassword = () => {
                     first_name: profile._json.name,
                     last_name: " ", //Valor por defecto
                     email: profile._json.email,
-                    password: hashPassword("coder"), //Valor por defecto
+                    password: hashPassword("Pecas622"), //Valor por defecto
                     age: 18 //Valor por defecto
                 })
             } 
@@ -83,7 +83,7 @@ const initializatePassword = () => {
     
     passport.use('jwt', new JWTStrategy({
         jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
-        secretOrKey: "coder1234"
+        secretOrKey: "Pecas622"
     }, async (jwt_payload, done) => {
         try {
             return done(null, jwt_payload)
