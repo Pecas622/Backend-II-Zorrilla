@@ -29,3 +29,70 @@
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script>
+    // Selecciona el formulario y escucha el evento submit
+    const form = document.getElementById('registerForm');
+    
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); // Evita que el formulario se envíe por defecto
+
+        // Obtiene los valores de los campos
+        const firstName = form.first_name.value.trim();
+        const lastName = form.last_name.value.trim();
+        const age = form.age.value.trim();
+        const email = form.email.value.trim();
+        const password = form.password.value.trim();
+
+        // Validaciones simples
+        if (!firstName || !lastName || !age || !email || !password) {
+            // Muestra un mensaje de error si falta algún campo
+            Toastify({
+                text: "Por favor, complete todos los campos.",
+                duration: 3000,
+                backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc3a0)",
+                gravity: "top", // Top, bottom
+                position: "right", // Left, center, right
+            }).showToast();
+            return;
+        }
+
+        // Verificar que la edad sea un número positivo
+        if (isNaN(age) || age <= 0) {
+            Toastify({
+                text: "La edad debe ser un número válido.",
+                duration: 3000,
+                backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc3a0)",
+                gravity: "top",
+                position: "right",
+            }).showToast();
+            return;
+        }
+
+        // Verificar que el correo electrónico tenga formato válido
+        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+        if (!emailRegex.test(email)) {
+            Toastify({
+                text: "Por favor, ingrese un correo electrónico válido.",
+                duration: 3000,
+                backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc3a0)",
+                gravity: "top",
+                position: "right",
+            }).showToast();
+            return;
+        }
+
+        // Aquí puedes agregar la lógica para enviar el formulario si todo está bien
+        Toastify({
+            text: "Formulario enviado correctamente.",
+            duration: 3000,
+            backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+            gravity: "top",
+            position: "right",
+        }).showToast();
+
+        // Enviar el formulario o hacer alguna acción adicional si es necesario
+        // form.submit();  // Si deseas enviar el formulario
+    });
+</script>
