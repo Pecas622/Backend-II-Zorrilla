@@ -1,18 +1,21 @@
 import passport from 'passport'
 import local from 'passport-local'
 import GithubStrategy from 'passport-github2'
-import {validatePassword, hashPassword} from '../utils/bcrypt.js'
+import { validatePassword, hashPassword } from '../utils/bcrypt.js'
 import userModel from '../models/users.models.js'
 import jwt from 'passport-jwt'
+import dotenv from 'dotenv'
 
-const localStrategy = local.Strategy //Defino la estrategia a implementar
+dotenv.config() // Carga las variables de entorno
+
+const localStrategy = local.Strategy
 const JWTStrategy = jwt.Strategy
 const ExtractJWT = jwt.ExtractJwt
 
 const cookieExtractor = (req) => {
     let token = null
-    if(req.cookies) {
-        token = req.cookies['Pecas622'] //Consulto especificamente esta cookie
+    if (req.cookies) {
+        token = req.cookies[process.env.COOKIE_NAME] // Nombre de cookie desde .env
     }
     return token
 }
@@ -24,83 +27,92 @@ const initializatePassword = () => {
         usernameField: 'email'
     }, async (req, username, password, done) => {
         try {
-            const {first_name, last_name, email, password, age} = req.body
+            const { first_name, last_name, email, age } = req.body
             const newUser = await userModel.create({
-                first_name : first_name, 
-                last_name: last_name, 
-                email: email, 
-                password: hashPassword(password), 
-                age: age
+                first_name,
+                last_name: last_name.trim() || " ", // Asegura que no haya espacios en blanco
+                email,
+                password: hashPassword(password),
+                age
             })
-            return done(null, newUser) //Se ejecuto correctamente y envio al usuario
+            return done(null, newUser)
         } catch (e) {
+            console.error(e)
             return done(e)
         }
     }))
 
-    passport.use('login', new localStrategy({usernameField: 'email'}, async (username, password, done) => {
+    passport.use('login', new localStrategy({ usernameField: 'email' }, async (username, password, done) => {
         try {
-    
-            const user = await userModel.findOne({email:username})
-        
-            if(validatePassword(password, user?.password)) {
+            const user = await userModel.findOne({ email: username })
+
+            if (!user) {
+                return done(null, false, { message: "Usuario no encontrado" })
+            }
+
+            if (validatePassword(password, user.password)) {
                 return done(null, user)
             } else {
-                return done(null, false) //No hubo ningun error pero no se logueo mi usuario
+                return done(null, false, { message: "Contraseña incorrecta" })
             }
-    
+
         } catch (e) {
+            console.error(e)
             return done(e)
         }
     }))
 
     passport.use('github', new GithubStrategy({
-        clientID: "Iv23liHgIQzgXMKtuTwn",
-        clientSecret: "bc51ad1429ecb70be41d7e7270f69156c2925f0b",
-        callbackURL: "http://localhost:8080/api/sessions/githubcallback"
+        clientID: process.env.GITHUB_CLIENT_ID,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET,
+        callbackURL: process.env.GITHUB_CALLBACK_URL
     }, async (accessToken, refreshToken, profile, done) => {
         try {
-            
-            let user = await userModel.findOne({email: profile._json.email})
+            let user = await userModel.findOne({ email: profile._json.email })
 
-            if(!user) { //Si no existe lo creo
+            if (!user) {
                 user = await userModel.create({
                     first_name: profile._json.name,
-                    last_name: " ", //Valor por defecto
+                    last_name: " ", 
                     email: profile._json.email,
-                    password: hashPassword("Pecas622"), //Valor por defecto
-                    age: 18 //Valor por defecto
+                    password: hashPassword(process.env.DEFAULT_PASSWORD), 
+                    age: 18
                 })
-            } 
-            
-            done(null,user) //Si existe lo logueo
-            
+            }
+
+            done(null, user)
+
         } catch (e) {
-            console.log(e);
-            done(e)       
+            console.error(e)
+            done(e)
         }
     }))
-    
+
     passport.use('jwt', new JWTStrategy({
         jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
-        secretOrKey: "Pecas622"
+        secretOrKey: process.env.JWT_SECRET
     }, async (jwt_payload, done) => {
         try {
             return done(null, jwt_payload)
         } catch (e) {
+            console.error(e)
             return done(e)
         }
     }))
 
-    //Pasos necesarios para generar una sesion y manejarnos via HTTP
     passport.serializeUser((user, done) => {
         done(null, user._id)
     })
 
     passport.deserializeUser(async (id, done) => {
-        const user = await userModel.findById(id)
-        done(null, user)
+        try {
+            const user = await userModel.findById(id)
+            done(null, user)
+        } catch (e) {
+            console.error(e)
+            done(e)
+        }
     })
-} 
+}
 
 export default initializatePassword

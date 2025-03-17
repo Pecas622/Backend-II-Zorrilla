@@ -11,7 +11,7 @@ export const login = async (req,res) => {
             rol: req.user.rol
         } 
         //Retornar un token de JWT
-        return res.status(200).cookie('coderSession', generateToken(req.user), {
+        return res.status(200).cookie('Pecas622', generateToken(req.user), {
             httpOnly: true,
             secure: false, //Evitar errores de https
             maxAge: 86400000 //Un dia en mls
@@ -40,7 +40,7 @@ export const githubLogin = (req,res) => {
             first_name: req.user.first_name,
             rol: req.user.rol
         } 
-        res.status(200).cookie('coderSession', generateToken(req.user), {
+        res.status(200).cookie('Pecas622', generateToken(req.user), {
             httpOnly: true,
             secure: false, //Evitar errores de https
             maxAge: 86400000 //Un dia en mls
